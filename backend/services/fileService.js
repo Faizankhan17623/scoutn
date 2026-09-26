@@ -1,4 +1,4 @@
-const pdfParse = require("pdf-parse");
+const { PDFParse } = require("pdf-parse");
 
 const MAX_EXTRACTED_CHARS = 12000;
 
@@ -13,8 +13,12 @@ async function extractText(file) {
 
   let text;
   if (file.mimetype === "application/pdf") {
-    const parsed = await pdfParse(file.buffer);
-    text = parsed.text;
+    const parser = new PDFParse({ data: file.buffer });
+    try {
+      text = (await parser.getText()).text;
+    } finally {
+      await parser.destroy();
+    }
   } else {
     text = file.buffer.toString("utf8");
   }
