@@ -11,6 +11,7 @@ import {
   transcribeAudio,
   extractFileText,
 } from "./api";
+import { HELP_TEXT, isHelpCommand } from "./helpContent";
 import "./App.css";
 
 const SIDEBAR_MIN_WIDTH = 200;
@@ -184,6 +185,19 @@ function App() {
 
   async function submitMessage(text, file) {
     if (!text || loading) return;
+
+    if (isHelpCommand(text)) {
+      setError("");
+      // Shown as a normal exchange in the thread, but answered entirely
+      // client-side: no backend call, no rate-limit usage, and nothing is
+      // persisted to the conversation in MongoDB.
+      setMessages((prev) => [
+        ...prev,
+        { role: "user", content: text, searches: [] },
+        { role: "assistant", content: HELP_TEXT, searches: [], toolCalls: [], followUps: [] },
+      ]);
+      return;
+    }
 
     setError("");
     setLoading(true);
