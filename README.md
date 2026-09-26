@@ -1,5 +1,8 @@
 # Scout
 
+**Classification: agentic AI application** (not RAG — no vector database,
+no document corpus, no retrieval step).
+
 A multi-turn agent that reaches out to live tools when it needs current
 information. Ask a question, and Scout (running on Groq's free-tier LLM API)
 decides whether to answer directly or call a tool first: search the live web,
@@ -9,6 +12,22 @@ code snippet in a real sandbox — then streams back an answer with a trace of
 what it did. Voice in and voice out are also supported, along with an
 optional deep research mode, file attachments, message editing, and
 syntax-highlighted code blocks with a one-click copy button.
+
+The model itself decides, per turn, whether and which tool to call
+(`tool_choice: "auto"` over a registered tool set) and can chain multiple
+tool calls before answering — that model-driven, iterative tool selection is
+what makes this an *agent* rather than a fixed retrieval pipeline. There is
+no embedding step and no vector index anywhere in the stack; every tool call
+hits a live, real-time source (the web, a weather API, Wikipedia, GitHub's
+API, a code sandbox) rather than a pre-ingested document store.
+
+This sits opposite a classic RAG app: see
+[personal-gpt-rag](https://github.com/Faizankhan17623/personal-gpt-rag),
+which chunks and embeds uploaded documents into Pinecone and retrieves the
+top-k chunks for each answer, with no model-decided tool use. Scout has no
+document ingestion or embeddings at all; personal-gpt-rag has no tools or
+agent loop at all — the two are complementary reference implementations of
+the two architectures rather than variations on the same one.
 
 ## Architecture
 
